@@ -2,7 +2,10 @@
 *
 
 # Unignore files with extension
-!.*
+!*.*
+
+# Unignore folders
+!*/
 
 # Ignore executables
 *.exe
