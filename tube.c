@@ -1,3 +1,5 @@
+// TODO: Comment Functions and Structs
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -13,8 +15,11 @@ Joint joints[MAX_N];
 int children[MAX_N][MAX_N];
 int child_count[MAX_N];
 int joint_times[MAX_N];
+// TODO: joint_ids is possibly useless?
 int joint_ids[MAX_N];
 
+// TODO: Document as flowchart
+// TODO: Check if return/hb param is necessary
 int dfs(int node, int *size, int *heaviest_branch) {
     int max_child_time = 0;
     for (int i = 0; i < child_count[node]; i++) {
@@ -30,32 +35,29 @@ int dfs(int node, int *size, int *heaviest_branch) {
     }
     joint_times[(*size)] = joints[node].time;
     joint_ids[(*size)++] = node; 
-    printf("%d\n", current_branch_time);
     return current_branch_time;
 }
 
 int compare(const void *a, const void *b) {
     int idx_a = *(int *)a;
     int idx_b = *(int *)b;
-    return joint_times[idx_b] - joint_times[idx_a];
+    // TODO: Find out why is inverted correct
+    return joint_times[idx_a] - joint_times[idx_b];
 }
 
 int minimize_time(int root, int C) {
+    if (C == 0) return 0;
     int size = 0;
     int heaviest_branch = 0;
     dfs(root, &size, &heaviest_branch);  
     int indices[MAX_N];
     for (int i = 0; i < size; i++) {
-        indices[i] = i; 
+        indices[i] = i;
     }
     // TODO: Replace with self-made sort
     qsort(indices, size, sizeof(int), compare);
-    printf("Removed nodes: ");
-    for (int i = 0; i < C && i < size; i++) {
-        printf("%d: {%d} ", joints[indices[i]].id, joints[indices[i]].time);
-        joints[indices[i]].time = 0;
-    }
-    printf("\n");
+    joints[indices[0]].time = 0;
+    minimize_time(indices[0], C - 1);
     size = 0;
     heaviest_branch = 0;
     int hb_new = dfs(root, &size, &heaviest_branch);
@@ -71,7 +73,6 @@ int main() {
         joints[i].time = t;
         joints[i].parent = p;
         joints[i].id = i;
-        printf("Joint %d: {time=%d, parent=%d}\n", joints[i].id, joints[i].time, joints[i].parent);
         if (p != -1) {
             children[p][child_count[p]++] = i;
         }
