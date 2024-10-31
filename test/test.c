@@ -35,13 +35,13 @@ int test_task(const char *name) {
 }
 
 int main() {
-    printf(ANSI_INVERT_BOLD "Task                Expected  Found     Status    " ANSI_REGULAR "\n");
+    printf(ANSI_INVERT_BOLD "Task                Expected  Found     Status" ANSI_REGULAR "\n");
     for(int i = 10; i <= 10000;) {
         for(int j = 1; j <= 100;) {
            char tname[100];
            sprintf(tname, "task_%d_%d", i, j);
            int test = test_task(tname);
-           if (test) printf(ANSI_COLOR_GREEN "Successful" ANSI_COLOR_RESET "\n");
+           if (test) printf(ANSI_COLOR_GREEN "Passed" ANSI_COLOR_RESET "\n");
            else printf(ANSI_COLOR_RED "Failed" ANSI_COLOR_RESET "\n");
            if (j == 1) j = 10;
            else if (j == 10 || j == 50) j *= 2;
