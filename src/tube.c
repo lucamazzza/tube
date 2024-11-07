@@ -15,8 +15,6 @@ Joint joints[MAX_N];
 int children[MAX_N][MAX_N];
 int child_count[MAX_N];
 int joint_times[MAX_N];
-// TODO: joint_ids is possibly useless?
-int joint_ids[MAX_N];
 
 // TODO: Document as flowchart
 // TODO: Check if return/hb param is necessary
@@ -25,16 +23,13 @@ int dfs(int node, int *size, int *heaviest_branch) {
     for (int i = 0; i < child_count[node]; i++) {
         int child = children[node][i];
         int child_time = dfs(child, size, heaviest_branch);
-        if (child_time > max_child_time) {
+        if (child_time > max_child_time) 
             max_child_time = child_time;
-        }
     }
     int current_branch_time = max_child_time + joints[node].time;
-    if (current_branch_time > *heaviest_branch) {
+    if (current_branch_time > *heaviest_branch) 
         *heaviest_branch = current_branch_time; 
-    }
-    joint_times[(*size)] = joints[node].time;
-    joint_ids[(*size)++] = node; 
+    joint_times[(*size++)] = joints[node].time;
     return current_branch_time;
 }
 
@@ -42,7 +37,7 @@ int compare(const void *a, const void *b) {
     int idx_a = *(int *)a;
     int idx_b = *(int *)b;
     // TODO: Find out why is inverted correct
-    return joint_times[idx_a] - joint_times[idx_b];
+    return joint_times[idx_b] - joint_times[idx_a];
 }
 
 int minimize_time(int root, int N, int C) {
@@ -56,11 +51,9 @@ int minimize_time(int root, int N, int C) {
         indices[i] = i;
     }
     // TODO: Replace with self-made sort
-    qsort(indices, size, sizeof(int), compare);
+    qsort(&indices, size, sizeof(int), compare);
     joints[indices[0]].time = 0;
-    minimize_time(indices[0], N, C - 1);
-    size = 0;
-    heaviest_branch = 0;
+    minimize_time(indices[0], N - 1, C - 1);
     int hb_new = dfs(root, &size, &heaviest_branch);
     return hb_new;
 }
