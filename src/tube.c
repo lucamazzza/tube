@@ -46,15 +46,14 @@ int dfs(int node, int *dl) {
 int minimize_time(int root, int N, int C, int k) {
   if (N <= C)
     return 0;
-  if (C == 0 ) {
-    //for (int i = 0; i < 10; i++) {
-    //    printf("%d | %d\n", nullifyments[i][0], nullifyments[i][1]);
-    //}
+  if (C == 0) {
+    for (int i = 0; i < 30; i++) {
+        //printf("%d | %d\n", nullifyments[i][0], nullifyments[i][1]);
+    }
     return nullifyments[0][1]; 
   }
-  
   int leaf, hb = dfs(root, &leaf);
-  while (leaf != -1 && k < MAX_N) {
+  while (leaf != -1) {
     int dummyptr = 0, joint_time = joints[leaf].time, mem_leaf = mem[leaf];
     joints[leaf].time = 0;
     mem[leaf] = -1;
@@ -68,7 +67,8 @@ int minimize_time(int root, int N, int C, int k) {
     k++;
   }
   qsort(nullifyments, k, sizeof(nullifyments[0]), compare);
-  return minimize_time(root, N, C - 1, k);
+  joints[nullifyments[0][0]].time = 0;
+  return minimize_time(root, N, C - 1, 0);
 }
 
 int main() {

@@ -78,11 +78,11 @@ int main() {
         else break;
     }
     printf("\nTesting done, ");
-    if (!failed)                                    printf(ANSI_COLOR_GREEN);
+    if      (!failed)                               printf(ANSI_COLOR_GREEN);
     else if (failed > 0 && failed < (total/2))      printf(ANSI_COLOR_YELLOW);
     else if (failed >= (total/2) && failed < total) printf(ANSI_COLOR_ORANGE);
     else                                            printf(ANSI_COLOR_RED);
-    printf("%d/%d" ANSI_COLOR_RESET " passed\n", passed, total);
+    printf("%d%%" ANSI_COLOR_RESET " passed\n", ((passed*100)/total));
     return 0;
 }
 
