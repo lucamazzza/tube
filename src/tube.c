@@ -26,6 +26,9 @@ ll max(ll a, ll b) { return a > b ? a : b; }
 // - Rec. case: computes the max time for children; for each spare, try to apply `x` spares and `(c - x)` for the rest.
 //              Save the minimum between current values, considering the max between the child result and the subtree.
 // - Wrap-up:   Consider installing a spare, computing the minimum between installing and using a spare and not.
+//
+// Time Complexity:     O(N * C^2)
+// Space Complexity:    O(N * C)
 void minimize_time(int u) {
   // Base case
   if (child_count[u] == 0) { 
