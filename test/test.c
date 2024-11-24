@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -17,15 +18,17 @@ int test_task(const char *name) {
 
     strcpy(cmd, "{ ./src/tube < test/io/");
     strcat(cmd, name);
-    strcat(cmd, ".txt > tmp.txt; } 2> errors.txt");
+    strcat(cmd, ".txt > tmp.txt; } 2>> errors.txt");
     
     strcpy(fname, "test/io/");
     strcat(fname, name);
     strcpy(fres, fname);
     strcat(fname, ".txt");
     strcat(fres, ".out");
-    
+    clock_t start = clock();
     system(cmd);
+    clock_t end = clock();
+    float time_taken = (float)(end - start) / CLOCKS_PER_SEC;
     FILE *file  = fopen("tmp.txt", "r");
     FILE *efile = fopen("errors.txt", "r");
     FILE *rfile = fopen(fres, "r");
@@ -35,9 +38,7 @@ int test_task(const char *name) {
     fscanf(rfile, "%d", &res);
     fscanf(efile, "%s", &errors);
     printf("%-20s", name);
-    printf("%-10d", res);
-    if (res != out) printf(ANSI_COLOR_GREY "%-10d" ANSI_COLOR_RESET, out);
-    else            printf("%-10d", out);
+    printf(ANSI_COLOR_GREY "%-20f" ANSI_COLOR_RESET, time_taken);
     if (strcmp(&errors, "")) {
         return -1;
     }
@@ -48,7 +49,7 @@ int main() {
     int passed  = 0;
     int failed  = 0;
     int total   = 0;
-    printf(ANSI_INVERT_BOLD "Task                Expected  Found     Status" ANSI_REGULAR "\n");
+    printf(ANSI_INVERT_BOLD "Task                Time taken [s]      Status" ANSI_REGULAR "\n");
     for(int i = 10; i <= 10000;) {
         for(int j = 1; j <= 100;) {
            char tname[100];

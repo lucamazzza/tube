@@ -1,127 +1,83 @@
-// TODO: Comment Functions and Structs
-
-// START IMPORTS
+#include <limits.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-// END IMPORTS
 
-// START DEFINES
-#define MAX_N 10000
-// END  DEFINES
+#define MAXN 10000          // Maximum amount of joints
+#define MAXC 100            // Maximum amount of spares
 
-// START STRUCTS
-typedef struct {
-  int time;
-  int parent;
-  int id;
-} Joint;
-// END STRUCTS
+typedef long long ll;       // `long long` is now `ll` for short
 
-// START GLOBALS
-Joint joints[MAX_N];
-int children[MAX_N][MAX_N];
-int childc[MAX_N];
-int leaves[MAX_N];
-int memory[MAX_N];
-// END GLOBALS
+int N, C;
+ll  T[MAXN];                // Maintenance time of each joint
+int adj[MAXN][MAXN];        // Static adjacency matrice
+int child_count[MAXN];      // Child count for each joint
+ll  mem[MAXN][MAXC + 1];    // Memory for dynamic programming
 
-// START DEFINITIONS
-int dfs(int node, int *dl);
-int minimize_time(int root, int N, int C, int k);
-// END DEFINITIONS
+// Minimum between `a` and `b`
+ll min(ll a, ll b) { return a < b ? a : b; }
 
-// TODO: Document as flowchart
-int dfs(int node, int *dl) {
-  if (memory[node] != -1) {
-    *dl = leaves[node];
-    return memory[node];
-  }
-  int mb = 0;
-  int ml = node;
+// Maximum between `a` and `b`
+ll max(ll a, ll b) { return a > b ? a : b; }
 
-  for (int i = 0; i < childc[node]; i++) {
-    int child_leaf;
-    int child = children[node][i];
-    int child_weight = dfs(child, &child_leaf);
-    if (child_weight > mb) {
-      mb = child_weight;
-      ml = child_leaf;
+// Minimizes the time taken to start production by removing C joints
+// and so nullifying their maintenance time.
+//
+// - Input:     the root of the system
+// - Base case: a leaf, so given it has no children, the weight of the subtree is determined by the leaf itsself.
+// - Rec. case: computes the max time for children; for each spare, try to apply `x` spares and `(c - x)` for the rest.
+//              Save the minimum between current values, considering the max between the child result and the subtree.
+// - Wrap-up:   Consider installing a spare, computing the minimum between installing and using a spare and not.
+void minimize_time(int u) {
+  // Base case
+  if (child_count[u] == 0) { 
+    mem[u][0] = T[u];
+    for (int c = 1; c <= C; c++) {
+      mem[u][c] = 0;
     }
+    return;
   }
-  memory[node] = joints[node].time + mb;
-  leaves[node] = ml;
-  *dl = ml;
-  return memory[node];
-}
-
-int minimize_time(int root, int N, int C, int k) {
-  if (N <= C)
-    return 0;
-  if (C == 0)
-    return dfs(root, &k);
-  int leaf = -1;
-  int hb = dfs(root, &leaf);
-  int bt = hb;
-  int bj = leaf;
-
-  printf("\nC = %d------------------\n", C);
-  printf("HB: %d\n", hb);
-  printf("Start: %d\n", leaf);
-
-  while (leaf != -1) {
-    if (joints[leaf].time != 0) {
-      int joint_time = joints[leaf].time;
-      int mem_time = memory[leaf];
-      int dummy = 0;
-      joints[leaf].time = 0;
-      hb = dfs(root, &dummy);
-      joints[leaf].time = joint_time;
-      memory[leaf] = mem_time;
-      if (hb < bt) {
-        bt = hb;
-        bj = leaf;
-
-        printf("New HB: %d\n", hb);
+  // Recursive case
+  for (int i = 0; i < child_count[u]; i++) {
+    int v = adj[u][i];
+    minimize_time(v);
+    ll cur[MAXC + 1];
+    for (int c = 0; c <= C; c++) {
+      cur[c] = LLONG_MAX; // Inizializza a infinito
+    }
+    for (int c = 0; c <= C; c++) {
+      for (int x = 0; x <= c; x++) {
+        cur[c] = min(cur[c], max(mem[v][x], mem[u][c - x]));
       }
     }
-    leaf = joints[leaf].parent;
-    k++;
+    for (int c = 0; c <= C; c++) {
+      mem[u][c] = cur[c];
+    }
   }
-
-  printf("Removed %d, with weight %d\n", bj, joints[bj].time);
-
-  joints[bj].time = 0;
-
-  printf("K: %d\n", k);
-
-  return minimize_time(root, N, C - 1, k);
+  ll cur[MAXC + 1];
+  cur[0] = T[u] + mem[u][0];
+  // Wrap-up
+  for (int c = 1; c <= C; c++) {
+    cur[c] = min(T[u] + mem[u][c], mem[u][c - 1]);
+  }
+  for (int c = 0; c <= C; c++) {
+    mem[u][c] = cur[c];
+  }
 }
 
 int main() {
-  int N, C;
   scanf("%d %d", &N, &C);
-  for (int i = 0; i < N; i++) {
-    memory[i] = -1;
-    childc[i] = 0;
-  }
-  for (int i = 0; i < N; i++) {
-    int t, p;
-    scanf("%d %d", &t, &p);
-    joints[i].time = t;
-    joints[i].parent = p;
-    joints[i].id = i;
-    if (p != -1)
-      children[p][childc[p]++] = i;
-  }
   int root = -1;
   for (int i = 0; i < N; i++) {
-    if (joints[i].parent == -1) {
+    int p;
+    ll t;
+    scanf("%lld %d", &t, &p);
+    T[i] = t;
+    if (p != -1) {
+      adj[p][child_count[p]++] = i;
+    } else {
       root = i;
-      break;
     }
   }
-  int result = minimize_time(root, N, C, 0);
-  printf("%d\n", result);
+  minimize_time(root);
+  printf("%lld\n", mem[root][C]);
   return 0;
 }
