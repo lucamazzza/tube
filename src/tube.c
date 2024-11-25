@@ -29,40 +29,40 @@ ll max(ll a, ll b) { return a > b ? a : b; }
 //
 // Time Complexity:     O(N * C^2)
 // Space Complexity:    O(N * C)
-void minimize_time(int u) {
+void minimize_time(int node) {
   // Base case
-  if (child_count[u] == 0) { 
-    mem[u][0] = T[u];
+  if (child_count[node] == 0) { 
+    mem[node][0] = T[node];
     for (int c = 1; c <= C; c++) {
-      mem[u][c] = 0;
+      mem[node][c] = 0;
     }
     return;
   }
   // Recursive case
-  for (int i = 0; i < child_count[u]; i++) {
-    int v = adj[u][i];
+  for (int i = 0; i < child_count[node]; i++) {
+    int v = adj[node][i];
     minimize_time(v);
     ll cur[MAXC + 1];
     for (int c = 0; c <= C; c++) {
-      cur[c] = LLONG_MAX; // Inizializza a infinito
+      cur[c] = LLONG_MAX; 
     }
     for (int c = 0; c <= C; c++) {
       for (int x = 0; x <= c; x++) {
-        cur[c] = min(cur[c], max(mem[v][x], mem[u][c - x]));
+        cur[c] = min(cur[c], max(mem[v][x], mem[node][c - x]));
       }
     }
     for (int c = 0; c <= C; c++) {
-      mem[u][c] = cur[c];
+      mem[node][c] = cur[c];
     }
   }
   ll cur[MAXC + 1];
-  cur[0] = T[u] + mem[u][0];
+  cur[0] = T[node] + mem[node][0];
   // Wrap-up
   for (int c = 1; c <= C; c++) {
-    cur[c] = min(T[u] + mem[u][c], mem[u][c - 1]);
+    cur[c] = min(T[node] + mem[node][c], mem[node][c - 1]);
   }
   for (int c = 0; c <= C; c++) {
-    mem[u][c] = cur[c];
+    mem[node][c] = cur[c];
   }
 }
 
