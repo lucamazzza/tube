@@ -10,6 +10,9 @@
 # Ignore executables
 *.exe
 
+# DS Store files
+.DS_Store
+
 # Misc
 errors.txt
 out.txt
