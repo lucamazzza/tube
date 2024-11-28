@@ -9,3 +9,8 @@
 
 # Ignore executables
 *.exe
+
+# Misc
+errors.txt
+out.txt
+tmp.txt
