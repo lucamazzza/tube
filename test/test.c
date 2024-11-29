@@ -13,13 +13,22 @@
 #define ANSI_INVERT_BOLD   "\e[1;7m"
 #define ANSI_REGULAR       "\e[m"
 
+double times[30];
+int current_task = 0;
+
+float avg_time(void) {
+    float sum = 0;
+    for (int i = 0; i < current_task; i++) {
+        sum += times[i];
+    }
+    return sum / current_task;
+}
+
 int test_task(const char *name) {
     char cmd[100], fname[100], fres[100];
-
     strcpy(cmd, "{ ./src/tube < test/io/");
     strcat(cmd, name);
     strcat(cmd, ".txt > tmp.txt; } 2>> errors.txt");
-    
     strcpy(fname, "test/io/");
     strcat(fname, name);
     strcpy(fres, fname);
@@ -29,6 +38,7 @@ int test_task(const char *name) {
     system(cmd);
     clock_t end = clock();
     float time_taken = (float)(end - start) / CLOCKS_PER_SEC;
+    times[current_task++] = time_taken;
     FILE *file  = fopen("tmp.txt", "r");
     FILE *efile = fopen("errors.txt", "r");
     FILE *rfile = fopen(fres, "r");
@@ -84,6 +94,7 @@ int main() {
     else if (failed >= (total/2) && failed < total) printf(ANSI_COLOR_ORANGE);
     else                                            printf(ANSI_COLOR_RED);
     printf("%d%%" ANSI_COLOR_RESET " passed\n", ((passed*100)/total));
+    printf("\nAverage time taken: %fs\n", avg_time());
     return 0;
 }
 
