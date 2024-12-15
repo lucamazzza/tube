@@ -52,15 +52,16 @@ ti pi
 - Intero $0 \le T_i \le 10^4$
 - Un solo valore $P_i = -1$ mentre per tutti gli altri $0 \le P_i < N$
 - Esiste sempre una sequenza che da $n_i$ conduce alla tanica principale
-- Si è grado di effettuare le operazioni e manutenzione in parallelo
+- Si è grado di effettuare le operazioni di manutenzione in parallelo
 
 ### Output
 
-- Un singolo valore intero che rappresenta il minimo tempo entro il quale l'ultima stazione puo iniziare la produzione
+Un singolo valore intero che rappresenta il minimo tempo entro il quale l'ultima stazione può iniziare la produzione.
 
 ### Requisiti
 
-- Elaborare una soluzione che sfrutti la programmazione dinamica
+Viene richiesto di elaborare una soluzione che trovi la soluzione ottima al problema sfruttando il paradigma della 
+programmazione dinamica.
 
 ## Soluzione
 
@@ -173,12 +174,15 @@ abbiamo constatato una i seguenti valori statistici (considerati per 10 esecuzio
 | ----------------------- | ---------: |
 | Media   $\overline{x}$  | $175.3$ µs |
 | Mediana $\widetilde{x}$ | $172.5$ µs |
-| Range                   | $200$ µs   |
-| Minimo                  | $117$ µs   |
-| Massimo                 | $317$ µs   |
+| Range                   | $200.0$ µs |
+| Minimo                  | $117.0$ µs |
+| Massimo                 | $317.0$ µs |
 
 Questi dati si riferiscono all'insieme di task di numerosità $n$ di $30$, per un totale tempo di esecuzione di $5.259$ 
 ms.
+
+La complessità temporale risulta quindi essere $O(N + C^2)$, dove $N$ è la grandezza dell'input e $C$ è il numero di
+ricambi disponibili.
 
 ## Statistiche di spazio
 
