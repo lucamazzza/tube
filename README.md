@@ -119,8 +119,8 @@ we noted the following statistical values (considered for 10 executions of the s
 
 | Data                    | Value      |
 | ----------------------- | ---------: |
-| Average $\overline{x}$  | $175.3$ µs |
-| Median $\widetilde{x}$  | $172.5$ µs |
+| Average                 | $175.3$ µs |
+| Median                  | $172.5$ µs |
 | Range                   | $200.0$ µs |
 | Minimum                 | $117.0$ µs |
 | Maximum                 | $317.0$ µs |
@@ -139,11 +139,11 @@ we have noted the following statistical values (considered for 10 executions of 
 
 | Data                    | Value       |
 | ----------------------- | ----------: |
-| Average $\overline{x}$  | $5.556$ MB  |
-| Median $\widetilde{x}$  | $2.575$ MB  |
-| Range                   | $14,850$ MB |
-| Minimum                 | $1,650$ MB  |
-| Maximum                 | $16,500$ MB |
+| Average                 | $5.556$ MB  |
+| Median                  | $2.575$ MB  |
+| Range                   | $14.850$ MB |
+| Minimum                 | $1.650$ MB  |
+| Maximum                 | $16.500$ MB |
 
 These data refer to the set of tasks of $n$ $30 in number, with a total utilisation of $33,400$ MB. 
 ms.
