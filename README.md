@@ -1,41 +1,23 @@
----
-header-includes:
-    - \usepackage{fancyhdr}
-    - \usepackage{algorithm}
-    - \usepackage{algpseudocode}
-    - \newcommand{\hideFromPandoc}[1]{#1}
-    - \hideFromPandoc{
-        \let\Begin\begin
-        \let\End\end
-      }
-    - \pagestyle{fancy}
-    - \fancyhead{} 
-    - \fancyhead[RO,RE]{Luca Mazza, Vasco Silva Pereira, Sebastiano Piubellini}
-    - \fancyfoot{}
-    - \fancyfoot[CE,CO]{\thepage}
+# Tube
 
----
+## Description
 
-# Problema dei tubi
+The project consists of solving an optimisation problem with regard to a chocolate factory.
 
-## Descrizione del problema
+This factory has a chocolate canister (*root*) from which several pipes lead to the production stations. 
+production stations; these pipes are interconnected by joints (*nodes*) that periodically have to be maintained, and this
+must be maintained, and this takes time.
 
-Il progetto consiste nella risoluzione di un problema di ottimizzazione per quanto riguarda una fabbrica di cioccolato.
+However, replacement joints (*nodes*) are available which reduce maintenance time to zero.
 
-La suddetta fabbrica presenta una tanica di cioccolato (*radice*) dalla quale partono diverse tubature che portano il 
-cioccolato alle stazioni di produzione; queste tubature sono interconnesse da dei giunti (*nodi*) che periodicamente
-devono essere manutenuti, e questo richiede del tempo.
-
-Sono però disponibili dei giunti (*nodi*) di ricambio che azzerano il tempo di manutenzione.
-
-Si deve quindi trovare quali giunti nella diramazione di tubi è ottimo cambiare per ottenere il minor tempo possibile
-per l'inizio della produzione.
+It is therefore necessary to find out which joints in the tube branch it is best to change in order to achieve the shortest possible time
+for the start of production.
 
 ### Input
 
-La prima riga contiene due numeri interi $N$, $C$; il primo rappresenta il numero totale di giunti presenti nel sistema,
-mentre il secondo rappresenta il numero di ricambi disponibili.
-Le righe successive sono composte dal parametro $t_n$ (*tempo di manutenzione*) e $p_n$ (*nodo genitore*). 
+The first line contains two integers $N$, $C$; the first represents the total number of joints in the system,
+while the second represents the number of available spares.
+The next lines are composed of the parameter $t_n$ (*maintenance time*) and $p_n$ (*parent node*). 
 
 ```
 N C
@@ -45,155 +27,129 @@ t1 p1
 ti pi
 ```
 
-#### Vincoli
+#### Constraints
 
-- Intero $1 \le N \le 10000$
-- Intero $0 \le C \le 100$
-- Intero $0 \le T_i \le 10^4$
-- Un solo valore $P_i = -1$ mentre per tutti gli altri $0 \le P_i < N$
-- Esiste sempre una sequenza che da $n_i$ conduce alla tanica principale
-- Si è grado di effettuare le operazioni di manutenzione in parallelo
+- Integer $1 \le N \le 10000$
+- Integer $0 C \le 100$
+- Integer $0 \le T_i \le 10^4$
+- Only one value $P_i = -1$ while for all others $0 \le P_i < N$
+- There is always a sequence from $n_i$ leading to the main tank
+- You are allowed to perform maintenance operations in parallel
 
 ### Output
 
-Un singolo valore intero che rappresenta il minimo tempo entro il quale l'ultima stazione può iniziare la produzione.
+A single integer value representing the minimum time within which the last station can start production.
 
-### Requisiti
+### Requirements
 
-Viene richiesto di elaborare una soluzione che trovi la soluzione ottima al problema sfruttando il paradigma della 
-programmazione dinamica.
+A solution is required to find the optimal solution to the problem by using utilising the paradigm of dynamic programming.
 
-## Soluzione
+## Solution
 
-Analizzando la richesta del problema, abbiamo intuito che l'algoritmo richiesto dovesse risolvere un problema di
-ottimizzazione su un albero radicato, dove ogni nodo ha un valore associato (il tempo di manunenzione) e dove si dispone
-di "pezzi di ricambio", con i quali si può azzerare il valore associato.
+Analysing the problem request, we guessed that the required algorithm had to solve an
+optimisation on a rooted tree, where each node has an associated value (the maintenance time) and where you have
+of ‘spare parts’ with which the associated value can be reset.
 
-L'obbiettivo è quello di minimizzare il massimo valore nei sottoalberi risultanti, distribuendo ricambi in modo ottimale
-tra i nodi.
+The objective is to minimise the maximum value in the resulting subtrees, distributing spares optimally
+among the nodes.
 
-È quindi palese la presenza di una struttura arborescente, rappresentante in toto il problema, della quale vanno
-esplorati i nodi, per poi calcolarne il massimo valore.
+It is therefore evident that there is an arborescent structure, representing the problem in its entirety, whose nodes must be
+nodes must be explored, and then its maximum value calculated.
 
-Questo problema è stato dapprima affrontato consultando il materiale del corso, nel quale abbiamo trovato differenti
-opzioni per la visita ricorsiva dei nodi, partendo da una radice; di questi abbiamo subito scelto di approcciarci al
-problema sulla base del prototipo del `DFS`.
+This problem was first addressed by consulting the course material, in which we found different
+options for the recursive exploration of nodes, starting with a root; of these we immediately chose to approach the problem on the basis of the
+problem on the basis of the `DFS` prototype.
 
-Riassumendo, l'algoritmo percorre l'albero, dalla radice alle foglie, dando priorità alla profondità, calcolando
-tutte le combinazioni di ricambi nel sottoalbero del nodo corrente, per poi minimizzare il massimo tra il risultato del
-sottoalbero e quello del nodo corrente.
+In summary, the algorithm traverses the tree, from root to leaves, giving priority to depth, calculating
+all the part combinations in the subtree of the current node, and then minimising the maximum between the result of the
+subtree and that of the current node.
 
-L'algoritmo è stato implementato quindi ricorsivamente, il quale parte dalla radice e visita i nodi seguendo una
-trasversale *post-ordine*, quindi vengono visitati dapprima i figli, poi il nodo corrente.
-I risultati calcolati per i figli vengono combinati per calcolare il risultato del nodo corrente.
+The algorithm was then implemented recursively, which starts from the root and visits the nodes following a
+transversal *post-order*, so the children are visited first, then the current node.
+The results calculated for the children are combined to calculate the result for the current node.
 
-$\pagebreak$
+### Pseudocode
 
-### Pseudocodice
-
-```{=latex}
-\begin{algorithm}
-\caption{Minimize Time}
-\begin{algorithmic}
-\Procedure{MinimizeTime}{n}
-    \If{$\text{child\_count}[n] = 0$} \Comment{Caso base}
-        \State $\text{mem}[n][0] \gets T[n]$
-        \For{$c \gets 1$ to $C$}
-            \State $\text{mem}[n][c] \gets 0$
-        \EndFor 
-        \State \Return
-    \EndIf
-    \For{each child $v$ of $n$ in $\text{adj}[n]$} \Comment{Caso generale}
-        \State \Call{MinimizeTime}{$v$}
-        \State Initialize $\text{cur}[0 \dots C] \gets \infty$
-        \For{$c \gets 0$ to $C$}
-            \For{$x \gets 0$ to $c$}
-                \State $\text{cur}[c] \gets \min(\text{cur}[c], \max(\text{mem}[v][x], \text{mem}[node][c - x]))$
-            \EndFor
-        \EndFor
-        \State $\text{mem}[n][...] \gets \text{cur}[...]$
-    \EndFor
-    \State Initialize $\text{cur}[0 \dots C]$
-    \State $\text{cur}[0] \gets T[n] + \text{mem}[n][0]$
-    \For{$c \gets 1$ to $C$} \Comment{Wrap-up}
-        \State $\text{cur}[c] \gets \min(T[n] + \text{mem}[n][c], \text{mem}[n][c - 1])$
-    \EndFor
-    \State $\text{mem}[n][...] \gets \text{cur}[...]$
-\EndProcedure
-\end{algorithmic}
-\end{algorithm}
+```
 ```
 
-Come si può carpire dallo pseudocodice, l'algoritmo si compone di tre passaggi:
+As can be gathered from the pseudocode, the algorithm consists of three steps:
 
-#### 1. Caso base
+#### 1. Base case
 
-Il caso base rappresenta l'evenienza nel quale l'algoritmo si trova su un *nodo foglia*, quindi un nodo dove non sono
-presenti figli.
+The base case represents the eventuality in which the algorithm is on a *leaf node*, i.e. a node where there are no
+children are present.
 
-In questo caso l'algoritmo ha due cammini che può seguire:
+In this case the algorithm has two paths it can follow:
 
-* se il numero di ricambi residui $c$ è $0$, il valore massimo è semplicemente il valore del nodo stesso;
-* se invece il numero di ricambi residui è $c$ strettamente maggiore di $0$, il massimo è $0$, dato che non ci sono 
-figli su cui utilizzarli.
+* if the number of residual spares $c$ is $0$, the maximum value is simply the value of the node itself;
+* if, on the other hand, the number of residual spares $c$ is strictly greater than $0$, the maximum is $0$, since there are no 
+children to use them on.
 
-$\pagebreak$
+#### 2. General case
 
-#### 2. Caso generale
+For a node with $u$ children, the spares distributions on the subtree are first computed:
 
-Per un nodo con $u$ figli vengono dapprima calcolate le distribuzioni di ricambi sul sottoalbero:
+* All children $v$ of $n$ are iterated and the solutions computed for the subtrees rooted in $v$ are combined.
+* Every possible distribution $x$ of the $c$ spares is attempted where:
+    * $x$ spares are applied to the subtree of the child $v$;
+    * $c-x$ spares are applied to the remaining children and to $n$.
 
-* Vengono iterati tutti i figli $v$ di $n$ e si combinano le soluzioni calcolate per i sottalberi radicati in $v$.
-* Viene tentata ogni possibile distribuzione $x$ dei $c$ ricambi dove:
-    * $x$ ricambi vengono applicati al sottoalbero del figlio $v$;
-    * $c-x$ ricambi vengono applicati ai rimanenti figli e a $n$.
-
-La formula utilizzata risulta quindi essere:
+The formula used is therefore:
 
 $$cur(c) = \min(cur(c), \max(S_v(x), S_u(c - x)))$$
 
-dove $cur(c)$ rappresenta il valore attuale calcolato per $c$ ricambi distribuite nel sottoalbero,
-$S_v(x)$ la soluzione ottimale per $x$ ricambi applicati al figlio $v$ e $S_n(c-x)$ è la soluzione ottimale dei
-rimanenti $c-x$ ricambi applicati al nodo $n$ o ad altri suoi figli.
+where $cur(c)$ represents the present value calculated for $c$ parts distributed in the subtree,
+$S_v(x)$ the optimal solution for $x$ spares applied to the child $v$ and $S_n(c-x)$ is the optimal solution of the
+remaining $c-x$ spares applied to node $n$ or its other children.
 
-Questa minimizza il risultato massimo del sottoalbero del figlio $v$ e quello del nodo corrente.
+This minimises the maximum result of the subtree of child $v$ and that of the current node.
 
-#### 3. "Wrap-up"
+#### 3. ‘Wrap-up
 
-Viene infine considerato il miglioramento direttamente sul nodo corrente $n$, decisione che viene salvata nella memoria
-di programmazione dinamica:
+Finally, the improvement directly on the current node $n$ is considered, a decision that is saved in the memory
+dynamic programming memory:
 
 $$mem(n,c) = \min(T_n + mem(n, c), mem(n, c - 1))$$
 
-## Statistiche di tempo
+# Time statistics
 
-La soluzione da noi implementata risulta abbastanza veloce da essere giudicata soddisfacente, a nostro avviso;
-abbiamo constatato una i seguenti valori statistici (considerati per 10 esecuzioni della stessa istanza):
+The solution we implemented is fast enough to be judged satisfactory, in our opinion;
+we noted the following statistical values (considered for 10 executions of the same instance):
 
-| Dato                    | Valore     |
+| Data                    | Value      |
 | ----------------------- | ---------: |
-| Media   $\overline{x}$  | $175.3$ µs |
-| Mediana $\widetilde{x}$ | $172.5$ µs |
+| Average $\overline{x}$  | $175.3$ µs |
+| Median $\widetilde{x}$  | $172.5$ µs |
 | Range                   | $200.0$ µs |
-| Minimo                  | $117.0$ µs |
-| Massimo                 | $317.0$ µs |
+| Minimum                 | $117.0$ µs |
+| Maximum                 | $317.0$ µs |
 
-Questi dati si riferiscono all'insieme di task di numerosità $n$ di $30$, per un totale tempo di esecuzione di $5.259$ 
+These data refer to the set of tasks of numerosity $n$ of $30$, with a total execution time of $5,259$ 
 ms.
 
-La complessità temporale risulta quindi essere $O(N + C^2)$, dove $N$ è la grandezza dell'input e $C$ è il numero di
-ricambi disponibili.
+The time complexity thus results to be $O(N\cdot C^2)$, where $N$ is the input size and $C$ is the number of
+available spares.
 
-## Statistiche di spazio
+## Space statistics
 
-## Sviluppi futuri
+The algorithm is quite memory-hungry, given its static memory management, with no use of memory 
+dynamic memory. This is known to us and will be indicated in future developments;
+we have noted the following statistical values (considered for 10 executions of the same instance):
 
-La complessità spaziale dell'algoritmo può essere migliorata notevoltmente, passando da una gestione della memoria
-statica, presente nella versione attuale dell'algoritmo, ad una dinamica, allocando solamente lo spazio strettamente
-necessario per ogni task.
+| Data                    | Value       |
+| ----------------------- | ----------: |
+| Average $\overline{x}$  | $5.556$ MB  |
+| Median $\widetilde{x}$  | $2.575$ MB  |
+| Range                   | $14,850$ MB |
+| Minimum                 | $1,650$ MB  |
+| Maximum                 | $16,500$ MB |
 
+These data refer to the set of tasks of $n$ $30 in number, with a total utilisation of $33,400$ MB. 
+ms.
 
-## Conclusione
+The spatial complexity thus results to be $O(N\cdot C)$, where $N$ is the input size and $C$ is the number of
+available spares.
 
 
 
