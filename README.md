@@ -44,6 +44,8 @@ A single integer value representing the minimum time within which the last stati
 
 A solution is required to find the optimal solution to the problem by using utilising the paradigm of dynamic programming.
 
+---
+
 ## Solution
 
 Analysing the problem request, we guessed that the required algorithm had to solve an
@@ -105,14 +107,16 @@ remaining $c-x$ spares applied to node $n$ or its other children.
 
 This minimises the maximum result of the subtree of child $v$ and that of the current node.
 
-#### 3. ‘Wrap-up
+#### 3. Wrap-up
 
 Finally, the improvement directly on the current node $n$ is considered, a decision that is saved in the memory
 dynamic programming memory:
 
 $$mem(n,c) = \min(T_n + mem(n, c), mem(n, c - 1))$$
 
-# Time statistics
+---
+
+## Time statistics
 
 The solution we implemented is fast enough to be judged satisfactory, in our opinion;
 we noted the following statistical values (considered for 10 executions of the same instance):
