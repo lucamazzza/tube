@@ -149,7 +149,7 @@ we have noted the following statistical values (considered for 10 executions of 
 | Minimum                 | $1.650$ MB  |
 | Maximum                 | $16.500$ MB |
 
-These data refer to the set of tasks of $n$ $30 in number, with a total utilisation of $33,400$ MB. 
+These data refer to the set of tasks of $n$ $30$ in number, with a total utilisation of $33,400$ MB. 
 ms.
 
 The spatial complexity thus results to be $O(N\cdot C)$, where $N$ is the input size and $C$ is the number of
