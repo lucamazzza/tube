@@ -70,12 +70,9 @@ The algorithm was then implemented recursively, which starts from the root and v
 transversal *post-order*, so the children are visited first, then the current node.
 The results calculated for the children are combined to calculate the result for the current node.
 
-### Pseudocode
+### Cases
 
-```
-```
-
-As can be gathered from the pseudocode, the algorithm consists of three steps:
+The algorithm consists of three steps:
 
 #### 1. Base case
 
